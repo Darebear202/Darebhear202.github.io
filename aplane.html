@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>主人 vs 小狗飞行棋</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 10px;
+      font-family: "Microsoft YaHei", sans-serif;
+      background: linear-gradient(to bottom, #fff0f5, #ffe4e1);
+      min-height: 100vh;
+      text-align: center;
+      color: #333;
+    }
+    h1 { color: #ff1493; margin: 10px 0; font-size: 1.6rem; }
+    .safety { font-size: 0.85rem; color: #555; margin-bottom: 10px; line-height: 1.4; }
+    #dice {
+      font-size: 5rem;
+      margin: 20px auto;
+      color: #ff4500;
+      font-weight: bold;
+      width: 120px;
+      height: 120px;
+      line-height: 120px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+    #board {
+      background: white;
+      border-radius: 12px;
+      padding: 10px;
+      margin: 15px auto;
+      max-width: 100%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 4px;
+    }
+    .cell {
+      aspect-ratio: 1;
+      background: #e6f3ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      border: 1px solid #b3d9ff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cell:hover { background: #d1e8ff; }
+    .cell.even { background: #ffebee; border-color: #ffcdd2; }
+    .current { background: #ff69b4 !important; color: white; transform: scale(1.05); }
+    .player {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 0.85rem;
+      line-height: 32px;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      margin: 3px 0;
+    }
+    .girl { background: #ff69b4; }
+    .boy  { background: #1e90ff; }
+    #task {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px auto;
+      max-width: 100%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      font-size: 1rem;
+      line-height: 1.6;
+      min-height: 100px;
+    }
+    button {
+      padding: 16px 40px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      margin: 15px 5px;
+    }
+    #rollBtn { background: #ff4757; }
+    #rollBtn:hover { background: #ff6b81; transform: scale(1.05); }
+    #resetBtn { background: #ffa502; }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 85%;
+      max-height: 80%;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      position: relative;
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #555;
+    }
+    .close-btn:hover { color: #ff4757; }
+  </style>
+</head>
+<body>
+  <h1>主人 vs 小狗飞行棋</h1>
+  <p class="safety">安全词：黄（轻点/慢点）　红（立刻停）<br>按空格键或点击按钮投骰子，笑场就抱抱继续哦～</p>
+
+  <!-- 骰子 -->
+  <div id="dice">🎲</div>
+
+  <!-- 棋盘 -->
+  <div id="board">
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <!-- 任务 -->
+  <div id="task">
+    点击“掷骰子”或按空格键开始游戏！<br>
+    当前轮到：小狗
+  </div>
+
+  <!-- 按钮 -->
+  <button id="rollBtn">掷骰子 🎲 (轮到小狗)</button>
+  <button id="resetBtn">重置游戏</button>
+
+  <!-- 弹窗（指令显示） -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">×</span>
+      <div id="modalText"></div>
+    </div>
+  </div>
+
+  <script>
+    const tasks = [
+      "起点：什么都没有，继续玩～",
+      "惩罚：小狗跪下亲主人脚背10秒。（小狗：谢谢主人～）",
+      "奖励：小狗重复“我是主人的小狗”5次。（小狗大声：我是主人的小狗！）",
+      "惩罚：小狗翘屁股，主人轻拍5下。（主人：小狗翘好，拍拍～）",
+      "惩罚：小狗M字腿保持20秒，说“小骚b湿了哦”。（小狗：小骚b湿了哦主人）",
+      "惩罚：小狗戴眼罩，主人羽毛刮奶头/小豆豆30秒。",
+      "奖励：小狗跪舔主人手指20秒，像舔棒棒糖。（小狗哼哼舔）",
+      "惩罚：小狗双手举高，主人捏奶头5次。",
+      "惩罚：主人用笔在小狗奶子上写“主人的”。",
+      "惩罚：小狗夹衣夹保持1分钟。（小狗：主人好坏～）",
+      "惩罚：小狗塞小跳蛋，开低档跪着忍30秒。",
+      "奖励：小狗狗爬式摇屁股，汪汪叫3声。（小狗：汪汪！主人看我）",
+      "惩罚：小狗镜子前转圈，说“我是主人的小骚货”。",
+      "惩罚：小狗戴口球哼哼，爬半圈。",
+      "惩罚：主人低温蜡滴小狗奶头3滴。（小狗：主人轻点哦）",
+      "惩罚：小狗自摸到快高潮，停手2次，说“主人不让高潮”。（小狗：主人坏～）",
+      "惩罚：小狗掰开前后，主人检查+轻拍。",
+      "奖励：小狗跪着捧奶子，说“主人要惩罚小狗吗”。",
+      "惩罚：小狗用嘴叼主人内裤爬过来呈上。",
+      "惩罚：小狗跪写“我是主人的小骚b”20遍。",
+      "惩罚：小狗夹奶夹挂铃铛，走一圈不准响太大。",
+      "惩罚：主人冰块滑小狗小豆豆/下面30秒。",
+      "奖励：小狗跪深喉主人手指20秒。",
+      "惩罚：小狗翘屁股，主人拍15下，小狗数出来。",
+      "惩罚：小狗镜子说“平时那么乖，其实是主人的小坏狗”。",
+      "惩罚：小狗狗爬式当主人脚凳20秒。",
+      "惩罚：小狗塞跳蛋，主人遥控中档，小狗跪忍。",
+      "奖励：小狗重复“我是主人的小狗/小骚b”10次。",
+      "惩罚：小狗舌头舔干净主人滴到地上的东西。",
+      "惩罚：小狗跪自摸给主人看，到边缘停。",
+      "惩罚：小狗翘屁股掰开，主人拍照（只给他看）。",
+      "惩罚：小狗边缘忍耐，说“我是主人的玩具，不准高潮”。",
+      "主人手指浅插小狗下面，让小狗抖。",
+      "小狗戴鼻勾+口球，哼哼爬行。",
+      "主人在大腿内侧写“主人的小骚b”。",
+      "小狗跪深喉主人30秒。",
+      "主人蜡滴小狗下面，说“主人的标记”。",
+      "小狗靠窗跪，主人从后轻摸30秒（窗帘关）。",
+      "主人前后浅玩小狗（手指 + 小肛塞）。",
+      "主人让小狗高潮，说“给主人看小狗高潮的样子”。",
+      "主人脚轻踩小狗胸/下面10秒。",
+      "小狗重复“我平时那么乖，其实欠主人收拾”5次。",
+      "小狗夹奶夹拉扯，说“奶子是主人的”。",
+      "小狗塞尾巴肛塞，狗爬式摇尾巴。",
+      "小狗镜子说最羞耻的小狗幻想。",
+      "主人冰火交替小狗下面（冰块滑后温热抚摸）。",
+      "小狗跪求饶，说“主人惩罚小狗吧”。",
+      "小狗写“我是主人的小骚b”30遍。",
+      "小狗塞振动肛塞，开中档跪等主人。",
+      "主人说“把小狗当玩具给人看”，小狗说“是的主人”。",
+      "主人边缘控制小狗，不准高潮直到允许。",
+      "主人决定组合玩小狗（言语+姿势+道具）。",
+      "终点：赢家要求彻底释放（主人允许小狗高潮，或小狗侍奉主人）"
+    ];
+
+    let dogPos = 0;
+    let masterPos = 0;
+    let turn = "小狗";
+
+    const grid = document.getElementById('grid');
+    const dice = document.getElementById('dice');
+    const task = document.getElementById('task');
+    const rollBtn = document.getElementById('rollBtn');
+    const modal = document.getElementById('modal');
+    const modalText = document.getElementById('modalText');
+
+    // 绘制棋盘
+    function drawBoard() {
+      grid.innerHTML = '';
+      let index = 0;
+      let direction = 1;
+      for (let row = 9; row >= 0; row--) {
+        for (let col = direction === 1 ? 0 : 9; col >= 0 && col < 10; col += direction === 1 ? 1 : -1) {
+          if (index >= 52) break;
+          const cell = document.createElement('div');
+          cell.className = 'cell' + (index % 2 === 0 ? '' : ' even');
+          cell.innerHTML = `<div class="number">${index === 0 ? '起点' : index === 51 ? '终点' : index + 1}</div>`;
+          cell.onclick = () => showInstruction(index);
+          grid.appendChild(cell);
+          index++;
+        }
+        direction *= -1;
+      }
+    }
+
+    // 更新棋子
+    function updatePieces() {
+      document.querySelectorAll('.player').forEach(p => p.remove());
+      const cells = document.querySelectorAll('.cell');
+      if (cells[dogPos]) {
+        const dog = document.createElement('div');
+        dog.className = 'player girl';
+        dog.textContent = '小狗';
+        cells[dogPos].appendChild(dog);
+      }
+      if (cells[masterPos]) {
+        const master = document.createElement('div');
+        master.className = 'player boy';
+        master.textContent = '主人';
+        cells[masterPos].appendChild(master);
+      }
+    }
+
+    // 显示指令弹窗
+    function showInstruction(pos) {
+      if (pos >= tasks.length) return;
+      modalText.innerHTML = `<strong>格子 ${pos + 1}：</strong><br>${tasks[pos]}`;
+      modal.style.display = 'flex';
+    }
+
+    // 关闭弹窗
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    // 投骰子
+    function rollDice() {
+      rollBtn.disabled = true;
+      let count = 0;
+      const interval = setInterval(() => {
+        dice.textContent = Math.floor(Math.random() * 6) + 1;
+        count++;
+        if (count > 12) {
+          clearInterval(interval);
+          const final = Math.floor(Math.random() * 6) + 1;
+          dice.textContent = final;
+          movePiece(final);
+          rollBtn.disabled = false;
+        }
+      }, 80);
+    }
+
+    function movePiece(steps) {
+      let pos = turn === "小狗" ? dogPos : masterPos;
+      let step = 0;
+      const move = setInterval(() => {
+        step++;
+        pos++;
+        if (turn === "小狗") dogPos = pos;
+        else masterPos = pos;
+        updatePieces();
+        if (step >= steps || pos >= 51) {
+          clearInterval(move);
+          showInstruction(pos);
+          task.innerHTML = `<strong>当前落格 ${pos + 1}：</strong><br>${tasks[pos]}`;
+          turn = turn === "小狗" ? "主人" : "小狗";
+          rollBtn.textContent = `掷骰子 🎲 (轮到${turn})`;
+          if (pos >= 51) {
+            alert(`${turn === "主人" ? "小狗" : "主人"}到达终点！游戏结束～`);
+          }
+        }
+      }, 300);
+    }
+
+    document.getElementById('resetBtn').onclick = () => {
+      dogPos = 0;
+      masterPos = 0;
+      turn = "小狗";
+      rollBtn.textContent = "掷骰子 🎲 (轮到小狗)";
+      updatePieces();
+      task.innerHTML = "起点：什么都没有，继续玩～<br>当前轮到：小狗";
+    };
+
+    // 绑定空格键和Enter键投骰子
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        rollDice();
+      }
+    });
+
+    rollBtn.onclick = rollDice;
+
+    // 点击格子反复打开弹窗
+    document.getElementById('grid').addEventListener('click', (e) => {
+      const cell = e.target.closest('.cell');
+      if (!cell) return;
+      const cells = document.querySelectorAll('.cell');
+      const index = Array.from(cells).indexOf(cell);
+      if (index >= 0) showInstruction(index);
+    });
+
+    drawBoard();
+    updatePieces();
+  </script>
+</body>
+</html>
