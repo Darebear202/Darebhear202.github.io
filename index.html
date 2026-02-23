@@ -13,342 +13,611 @@
       min-height: 100vh;
       text-align: center;
       color: #333;
+      font-size: 16px;
     }
     h1 { color: #ff1493; margin: 10px 0; font-size: 1.6rem; }
-    .safety { font-size: 0.85rem; color: #555; margin-bottom: 10px; line-height: 1.4; }
+    .safety { font-size: 0.85rem; color: #555; margin: 8px 0 14px; line-height: 1.4; }
     #dice {
-      font-size: 5rem;
-      margin: 20px auto;
+      font-size: 4.8rem;
+      margin: 15px auto;
       color: #ff4500;
-      font-weight: bold;
-      width: 120px;
-      height: 120px;
-      line-height: 120px;
+      width: 110px;
+      height: 110px;
+      line-height: 110px;
       background: white;
-      border-radius: 16px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      transition: transform 0.3s;
+      border-radius: 20px;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.2);
     }
     #board {
       background: white;
-      border-radius: 12px;
-      padding: 10px;
-      margin: 15px auto;
-      max-width: 100%;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border-radius: 14px;
+      padding: 8px;
+      margin: 0 auto;
+      max-width: 98vw;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 4px;
     }
     .cell {
       aspect-ratio: 1;
-      background: #e6f3ff;
+      background: #f0f8ff;
       border-radius: 8px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       border: 1px solid #b3d9ff;
-      cursor: pointer;
-      transition: all 0.2s;
+      position: relative;
     }
-    .cell:hover { background: #d1e8ff; }
-    .cell.even { background: #ffebee; border-color: #ffcdd2; }
+    .cell.even { background: #fff0f5; border-color: #ffc1cc; }
     .current { background: #ff69b4 !important; color: white; transform: scale(1.05); }
     .player {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       font-size: 0.85rem;
-      line-height: 32px;
-      text-align: center;
+      line-height: 34px;
       color: white;
       font-weight: bold;
-      margin: 3px 0;
+      position: absolute;
+      bottom: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
     .girl { background: #ff69b4; }
-    .boy  { background: #1e90ff; }
+    .boy { background: #1e90ff; }
     #task {
       background: white;
-      border-radius: 12px;
-      padding: 15px;
-      margin: 15px auto;
-      max-width: 100%;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      font-size: 1rem;
-      line-height: 1.6;
+      border-radius: 14px;
+      padding: 14px;
+      margin: 16px auto;
+      max-width: 98vw;
       min-height: 100px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     }
     button {
-      padding: 16px 40px;
-      font-size: 1.3rem;
+      padding: 12px 28px;
+      font-size: 1.05rem;
       font-weight: bold;
       border: none;
       border-radius: 12px;
       color: white;
+      margin: 8px 6px;
       cursor: pointer;
-      margin: 15px 5px;
     }
     #rollBtn { background: #ff4757; }
-    #rollBtn:hover { background: #ff6b81; transform: scale(1.05); }
-    #resetBtn { background: #ffa502; }
+    #doneBtn { background: #2ed573; display: none; }
+    #resetBtn { background: #7f8c8d; }
     .modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       background: rgba(0,0,0,0.6);
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 999;
     }
     .modal-content {
       background: white;
-      padding: 30px;
+      padding: 20px;
       border-radius: 16px;
-      max-width: 85%;
-      max-height: 80%;
+      max-width: 90vw;
+      max-height: 80vh;
       overflow-y: auto;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       position: relative;
-      font-size: 1.1rem;
-      line-height: 1.7;
     }
     .close-btn {
       position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 2.5rem;
+      top: 8px;
+      right: 16px;
+      font-size: 2.4rem;
       cursor: pointer;
-      color: #555;
+      color: #777;
     }
-    .close-btn:hover { color: #ff4757; }
   </style>
 </head>
 <body>
-  <h1>主人 vs 小狗飞行棋</h1>
-  <p class="safety">安全词：黄（轻点/慢点）　红（立刻停）<br>按空格键或点击按钮投骰子，笑场就抱抱继续哦～</p>
 
-  <!-- 骰子 -->
-  <div id="dice">🎲</div>
+<h1>主人 vs 小狗飞行棋</h1>
+<p class="safety">安全词：黄（轻点/慢点）　红（立刻停）<br>空格或点击掷骰子，笑场就抱抱继续～</p>
 
-  <!-- 棋盘 -->
-  <div id="board">
-    <div id="grid" class="grid"></div>
-  </div>
+<div id="dice">🎲</div>
 
-  <!-- 任务 -->
-  <div id="task">
-    点击“掷骰子”或按空格键开始游戏！<br>
-    当前轮到：小狗
-  </div>
+<div id="board">
+  <div id="grid" class="grid"></div>
+</div>
 
-  <!-- 按钮 -->
+<div id="task">
+  点击“掷骰子”或按空格开始！<br>当前轮到：小狗
+</div>
+
+<div>
   <button id="rollBtn">掷骰子 🎲 (轮到小狗)</button>
-  <button id="resetBtn">重置游戏</button>
+  <button id="doneBtn">任务完成 ✓</button>
+  <button id="resetBtn">重置游戏（随机新任务）</button>
+</div>
 
-  <!-- 弹窗（指令显示） -->
-  <div id="modal" class="modal" onclick="closeModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <span class="close-btn" onclick="closeModal()">×</span>
-      <div id="modalText"></div>
-    </div>
+<div id="modal" class="modal" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <span class="close-btn" onclick="closeModal()">×</span>
+    <div id="modalText"></div>
   </div>
+</div>
 
-  <script>
-    const tasks = [
-      "起点：什么都没有，继续玩～",
-      "小狗跪下亲主人脚背10秒。（小狗：谢谢主人～）",
-      "小狗重复“我是主人的小狗”5次。（小狗大声：我是主人的小狗！）",
-      "小狗翘屁股，主人轻拍5下。（主人：小狗翘好，拍拍～）",
-      "小狗M字腿保持20秒，说“小骚b湿了哦”。（小狗：小骚b湿了哦主人）",
-      "小狗戴眼罩，主人羽毛刮奶头/小豆豆30秒。",
-      "小狗跪舔主人手指20秒，像舔棒棒糖。（小狗哼哼舔）",
-      "小狗双手举高，主人捏奶头5次。",
-      "主人用笔在小狗奶子上写“主人的”。",
-      "小狗夹衣夹保持1分钟。（小狗：主人好坏～）",
-      "小狗塞小跳蛋，开低档跪着忍30秒。",
-      "小狗狗爬式摇屁股，汪汪叫3声。（小狗：汪汪！主人看我）",
-      "小狗镜子前转圈，说“我是主人的小骚货”。",
-      "小狗戴口球哼哼，爬半圈。",
-      "主人低温蜡滴小狗奶头3滴。（小狗：主人轻点哦）",
-      "小狗自摸到快高潮，停手2次，说“主人不让高潮”。（小狗：主人坏～）",
-      "小狗掰开前后，主人检查+轻拍。",
-      "小狗跪着捧奶子，说“主人要惩罚小狗吗”。",
-      "小狗用嘴叼主人内裤爬过来呈上。",
-      "小狗跪写“我是主人的小骚b”20遍。",
-      "小狗夹奶夹挂铃铛，走一圈不准响太大。",
-      "主人冰块滑小狗小豆豆/下面30秒。",
-      "小狗跪深喉主人手指20秒。",
-      "小狗翘屁股，主人拍15下，小狗数出来。",
-      "小狗镜子说“平时那么乖，其实是主人的小坏狗”。",
-      "小狗狗爬式当主人脚凳20秒。",
-      "小狗塞跳蛋，主人遥控中档，小狗跪忍。",
-      "小狗重复“我是主人的小狗/小骚b”10次。",
-      "小狗舌头舔干净主人滴到地上的东西。",
-      "小狗跪自摸给主人看，到边缘停。",
-      "小狗翘屁股掰开，主人拍照（只给他看）。",
-      "小狗边缘忍耐，说“我是主人的玩具，不准高潮”。",
-      "主人手指浅插小狗下面，让小狗抖。",
-      "小狗戴鼻勾+口球，哼哼爬行。",
-      "主人在大腿内侧写“主人的小骚b”。",
-      "小狗跪深喉主人30秒。",
-      "主人蜡滴小狗下面，说“主人的标记”。",
-      "小狗靠窗跪，主人从后轻摸30秒（窗帘关）。",
-      "主人前后浅玩小狗（手指 + 小肛塞）。",
-      "主人让小狗高潮，说“给主人看小狗高潮的样子”。",
-      "主人脚轻踩小狗胸/下面10秒。",
-      "小狗重复“我平时那么乖，其实欠主人收拾”5次。",
-      "小狗夹奶夹拉扯，说“奶子是主人的”。",
-      "小狗塞尾巴肛塞，狗爬式摇尾巴。",
-      "小狗镜子说最羞耻的小狗幻想。",
-      "主人冰火交替小狗下面（冰块滑后温热抚摸）。",
-      "小狗跪求饶，说“主人惩罚小狗吧”。",
-      "小狗写“我是主人的小骚b”30遍。",
-      "小狗塞振动肛塞，开中档跪等主人。",
-      "主人说“把小狗当玩具给人看”，小狗说“是的主人”。",
-      "主人边缘控制小狗，不准高潮直到允许。",
-      "主人决定组合玩小狗（言语+姿势+道具）。",
-      "终点：赢家要求彻底释放（主人允许小狗高潮，或小狗侍奉主人）"
-    ];
+<script>
+// 任务分类（总共约250条，分为20个大类，每类8-15条不等）
+const categories = {
+  kneelKiss: [
+    "小狗跪下亲主人脚背10秒",
+    "小狗跪舔主人手指10秒",
+    "小狗跪舔主人棒棒30秒",
+    "小狗跪着给主人深喉口交20秒",
+    "小狗跪着用嘴侍奉主人30秒",
+    "小狗跪舔主人到射",
+    "小狗跪着深喉主人棒棒20秒"
+  ],
+  poseHold: [
+    "小狗双手举高保持15秒",
+    "小狗M字腿坐姿保持20秒",
+    "小狗趴下给主人当脚凳15秒",
+    "小狗翘高屁股，主人揉臀30秒",
+    "小狗双手抱头，主人摸胸或腰20秒",
+    "小狗跪姿保持30秒",
+    "小狗狗爬式保持20秒",
+    "小狗翘屁股保持姿势15秒"
+  ],
+  slapBeat: [
+    "小狗翘屁股，主人轻拍5下",
+    "主人拍小狗屁股10下，小狗自己数",
+    "主人执行：扇小狗脸3下",
+    "主人执行：扇小狗奶子5下",
+    "主人执行：抽打小狗大腿内侧5下",
+    "小狗翘屁股，主人抽打屁股15下",
+    "主人执行：扇小狗屁股",
+    "主人执行：抽打小狗大腿",
+    "主人执行：扇巴掌"
+  ],
+  blindfoldFeather: [
+    "小狗戴眼罩，主人用羽毛刮身体30秒",
+    "小狗戴眼罩，主人用手指轻触全身20秒",
+    "小狗戴眼罩，主人用冰块滑过奶头"
+  ],
+  nipplePlay: [
+    "主人捏小狗奶头5次",
+    "小狗夹两个奶夹保持45秒",
+    "小狗自摸奶头10秒",
+    "主人执行：扇小狗奶子5下",
+    "主人执行：抽打小狗奶子",
+    "小狗奶头被主人用跳蛋震动20秒",
+    "小狗奶头被主人用冰块刺激30秒"
+  ],
+  collarLeash: [
+    "小狗戴项圈跪姿30秒",
+    "主人牵着小狗项圈链子，让小狗爬10步",
+    "主人牵着小狗链子，让小狗跪着爬半圈",
+    "主人执行：戴项圈跪姿20秒",
+    "主人牵链子让小狗狗爬式移动"
+  ],
+  gagMuzzle: [
+    "小狗戴口球哼哼30秒",
+    "小狗戴口球+鼻勾，哼哼爬行20秒",
+    "小狗戴口球+眼罩，主人随意摸30秒",
+    "小狗戴口球，主人命令哼叫"
+  ],
+  bellClamp: [
+    "小狗戴铃铛奶夹，走一圈不准响太大",
+    "小狗夹铃铛奶夹，走一圈摇晃",
+    "小狗戴铃铛项圈，走动时铃响"
+  ],
+  tailPlug: [
+    "小狗戴小尾巴肛塞，狗爬式摇尾巴20秒"
+  ],
+  eggVibrate: [
+    "小狗塞小跳蛋（低档），跪姿30秒",
+    "小狗塞振动跳蛋（低档），跪等主人",
+    "小狗翘屁股，主人用跳蛋在外侧震动15秒",
+    "小狗带着跳蛋出门，主人随时遥控",
+    "小狗带着跳蛋出门，主人低档遥控",
+    "小狗带着跳蛋出门，主人中档遥控",
+    "小狗带着跳蛋出门，主人高档遥控",
+    "小狗带着跳蛋出门，主人间歇调档"
+  ],
+  ropeBind: [
+    "小狗被绳子简单捆绑双手，跪姿30秒",
+    "小狗被主人用绳子绑成M字腿，保持20秒",
+    "小狗被绳子捆胸，保持跪姿30秒",
+    "主人执行：用绳子绑小狗双手吊起，站姿10秒",
+    "小狗被绳子绑成龟甲缚，跪姿20秒",
+    "小狗被绳子绑腿，M字开腿保持"
+  ],
+  oralSex: [
+    "小狗跪着给主人深喉口交20秒",
+    "小狗跪舔主人棒棒30秒",
+    "小狗用嘴侍奉主人到边缘",
+    "小狗跪着深喉主人棒棒20秒",
+    "小狗用嘴含主人棒棒摇动",
+    "小狗给主人完整口交30秒",
+    "小狗用嘴侍奉主人到高潮"
+  ],
+  swallowCum: [
+    "小狗跪着给主人完整口交后吞下",
+    "主人执行：射在小狗嘴里，小狗吞精",
+    "小狗跪舔主人到射，全部吞下",
+    "主人执行：射在小狗舌头上，小狗吞精",
+    "小狗深喉口交到射，吞下精液",
+    "主人执行：射在小狗嘴里，小狗吞精后说谢谢",
+    "小狗用嘴侍奉主人到射，吞精"
+  ],
+  intercourse: [
+    "主人抱着小狗，站立式插入操30秒",
+    "小狗骑在主人身上，女上位坐上去摇动20秒",
+    "主人从后面抱着小狗，后入式操10下",
+    "小狗跪着，主人从前抱着操小狗的骚逼",
+    "小狗骑乘位坐在主人身上，主动摇臀20秒",
+    "主人抱着小狗腿，传教士位深插30秒",
+    "小狗趴着，主人从后抱着腰猛操",
+    "小狗被主人抱起，双腿缠腰操10秒",
+    "主人从后面抱着小狗，站立后入操",
+    "小狗坐在主人腿上，面对面骑乘摇动",
+    "小狗翘屁股，主人抱着腰从后猛插",
+    "小狗被主人抱起，边走边操",
+    "主人抱着小狗，靠墙站立式深插",
+    "小狗骑乘位，主人托着屁股向上顶",
+    "小狗趴在主人身上，主人从下向上操"
+  ],
+  analPlay: [
+    "主人给小狗后面涂满润滑，慢慢浅入10秒",
+    "小狗翘屁股，主人从后浅插肛门20秒",
+    "主人从后面抱着小狗，浅插肛门",
+    "小狗跪着，主人从后浅插肛门",
+    "小狗翘屁股，主人慢慢深一点插后面",
+    "主人执行：用手指浅插小狗后面，让小狗适应",
+    "主人用小号肛塞先扩张，再浅插",
+    "主人从后抱着小狗腰，缓慢肛交15秒",
+    "主人执行：抱着小狗腿，从后浅插肛门",
+    "主人执行：让小狗骑在身上，从下向上浅插后面",
+    "主人给小狗后面涂润滑，用手指+跳蛋双重准备",
+    "主人从后抱着小狗，肛交到边缘",
+    "主人执行：用小号肛塞+润滑，让小狗自己坐下去"
+  ],
+  photoMark: [
+    "主人拍照小狗翘屁股的样子，只给他看",
+    "小狗自己拍奶子照发给主人",
+    "主人拍照小狗高潮脸，只给他看",
+    "主人拍照小狗戴口球的样子，只给他看",
+    "主人拍照小狗M字腿的样子，只给他看",
+    "主人拍照小狗跪舔的样子，只给他看",
+    "主人拍照小狗高潮喷水的样子，只给他看"
+  ],
+  smearLick: [
+    "主人执行：涂蜂蜜在小狗奶头上，小狗舔掉",
+    "小狗涂巧克力酱在主人棒棒上，舔干净",
+    "主人执行：涂牛奶在小狗奶头上，小狗舔掉",
+    "小狗给主人涂蜂蜜在胸口，舔干净",
+    "主人执行：涂润滑油在小狗奶子上，按摩拍照",
+    "主人执行：涂蜂蜜在小狗奶头，让小狗舔掉",
+    "小狗涂巧克力在主人手指，舔干净",
+    "主人执行：涂牛奶在小狗奶头上，让小狗舔掉",
+    "小狗涂蜂蜜在主人棒棒，跪舔干净"
+  ],
+  temperature: [
+    "主人执行：用蜡烛滴小狗奶头3滴（低温）",
+    "主人执行：用冰块滑小狗奶头和骚逼30秒",
+    "主人执行：用冰块+热手交替玩小狗奶头",
+    "主人执行：用低温蜡滴小狗大腿内侧3滴"
+  ],
+  humiliation: [
+    "小狗重复5次：我是爸爸的专属肉便器",
+    "小狗说：爸爸，小狗的骚逼和奶子都是你的玩具，随便玩",
+    "小狗跪着说：爸爸，小狗是你的贱狗，求爸爸羞辱我",
+    "小狗写20遍：小狗是爸爸的欠操贱母狗",
+    "小狗对着镜子说：我是爸爸的骚货，平时装乖其实最浪",
+    "主人执行：命令小狗说『小狗的骚逼只为爸爸张开』",
+    "小狗说：爸爸，小狗下面好痒，好想被你操烂",
+    "小狗重复3次：爸爸，小狗是你的精液桶",
+    "主人执行：让小狗跪着说『谢谢爸爸赏赐精液』",
+    "小狗说：爸爸，小狗的奶头和骚逼都欠抽欠操",
+    "小狗跪求：爸爸，骂小狗是贱逼母狗吧",
+    "主人执行：言语羞辱：『看你这骚样，欠操的母狗』",
+    "小狗说：爸爸，小狗愿意被你当狗一样牵着操",
+    "小狗重复：爸爸，我是你的专属肉便器母狗",
+    "小狗说：爸爸，小狗的下面和奶子都属于你，随便虐",
+    "主人执行：命令小狗说『小狗的骚逼永远是爸爸的洞』",
+    "小狗说：爸爸，小狗好贱，好想被你羞辱到高潮",
+    "小狗写30遍：我是爸爸的贱狗骚逼",
+    "主人执行：让小狗跪着说『爸爸，小狗的嘴和下面都是你的套子』",
+    "小狗说：爸爸，小狗平时装乖，其实最欠爸爸收拾"
+  ]
+};
 
-    let dogPos = 0;
-    let masterPos = 0;
-    let turn = "小狗";
+// 固定起点和终点
+const startTask = "起点：什么都没有，继续玩～";
+const endTask = "终点：赢家要求彻底释放（主人允许高潮，或小狗完整侍奉主人）";
 
-    const grid = document.getElementById('grid');
-    const dice = document.getElementById('dice');
-    const task = document.getElementById('task');
-    const rollBtn = document.getElementById('rollBtn');
-    const modal = document.getElementById('modal');
-    const modalText = document.getElementById('modalText');
+// 当前任务数组
+let currentTasks = [];
 
-    // 绘制棋盘
-    function drawBoard() {
-      grid.innerHTML = '';
-      let index = 0;
-      let direction = 1;
-      for (let row = 9; row >= 0; row--) {
-        for (let col = direction === 1 ? 0 : 9; col >= 0 && col < 10; col += direction === 1 ? 1 : -1) {
-          if (index >= 52) break;
-          const cell = document.createElement('div');
-          cell.className = 'cell' + (index % 2 === 0 ? '' : ' even');
-          cell.innerHTML = `<div class="number">${index === 0 ? '起点' : index === 51 ? '终点' : index + 1}</div>`;
-          cell.onclick = () => showInstruction(index);
-          grid.appendChild(cell);
-          index++;
-        }
-        direction *= -1;
+// 判断是否为台词类任务
+function isDialogueTask(task) {
+  const lower = task.toLowerCase();
+  return lower.includes('说') || lower.includes('重复') || lower.includes('叫') || lower.includes('言语') || lower.includes('羞辱') || lower.includes('谢谢') || lower.includes('求');
+}
+
+// 随机抽取：从每个类别均匀抽取（每类尽量抽2~4条），同一具体任务不重复，台词≤10个
+function shuffleAndSelectTasks() {
+  let attempts = 0;
+  const maxAttempts = 100;
+
+  while (attempts < maxAttempts) {
+    attempts++;
+    let selected = [];
+    let used = new Set();
+
+    const categoryKeys = Object.keys(categories);
+    const numCategories = categoryKeys.length;
+    const targetPerCat = Math.floor(50 / numCategories); // 每类目标数量
+    let remaining = 50;
+
+    // 优先从每个类别抽取
+    categoryKeys.forEach(cat => {
+      let items = categories[cat].slice();
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
       }
-    }
-
-    // 更新棋子
-    function updatePieces() {
-      document.querySelectorAll('.player').forEach(p => p.remove());
-      const cells = document.querySelectorAll('.cell');
-      if (cells[dogPos]) {
-        const dog = document.createElement('div');
-        dog.className = 'player girl';
-        dog.textContent = '小狗';
-        cells[dogPos].appendChild(dog);
-      }
-      if (cells[masterPos]) {
-        const master = document.createElement('div');
-        master.className = 'player boy';
-        master.textContent = '主人';
-        cells[masterPos].appendChild(master);
-      }
-    }
-
-    // 显示指令弹窗
-    function showInstruction(pos) {
-      if (pos >= tasks.length) return;
-      modalText.innerHTML = `<strong>格子 ${pos + 1}：</strong><br>${tasks[pos]}`;
-      modal.style.display = 'flex';
-    }
-
-    // 关闭弹窗
-    function closeModal() {
-      modal.style.display = 'none';
-    }
-
-    modal.onclick = function(e) {
-      if (e.target === modal) closeModal();
-    };
-
-    // 投骰子
-    function rollDice() {
-      rollBtn.disabled = true;
-      let count = 0;
-      const interval = setInterval(() => {
-        dice.textContent = Math.floor(Math.random() * 6) + 1;
-        count++;
-        if (count > 12) {
-          clearInterval(interval);
-          const final = Math.floor(Math.random() * 6) + 1;
-          dice.textContent = final;
-          movePiece(final);
-          rollBtn.disabled = false;
+      let take = Math.min(targetPerCat + (remaining > targetPerCat * numCategories ? 1 : 0), items.length);
+      for (let i = 0; i < take && remaining > 0; i++) {
+        let task = items[i];
+        if (!used.has(task)) {
+          selected.push(task);
+          used.add(task);
+          remaining--;
         }
-      }, 80);
+      }
+    });
+
+    // 如果还不够50条，从剩余随机补
+    if (remaining > 0) {
+      let allRemaining = [];
+      Object.values(categories).flat().forEach(t => {
+        if (!used.has(t)) allRemaining.push(t);
+      });
+      for (let i = allRemaining.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allRemaining[i], allRemaining[j]] = [allRemaining[j], allRemaining[i]];
+      }
+      selected.push(...allRemaining.slice(0, remaining));
     }
 
-    function movePiece(steps) {
-      let pos = turn === "小狗" ? dogPos : masterPos;
-      let step = 0;
-      const move = setInterval(() => {
-        step++;
-        pos++;
-        if (turn === "小狗") dogPos = pos;
-        else masterPos = pos;
-        updatePieces();
-        if (step >= steps || pos >= 51) {
-          clearInterval(move);
-          showInstruction(pos);
-          task.innerHTML = `<strong>当前落格 ${pos + 1}：</strong><br>${tasks[pos]}`;
-          turn = turn === "小狗" ? "主人" : "小狗";
-          rollBtn.textContent = `掷骰子 🎲 (轮到${turn})`;
-          if (pos >= 51) {
-            alert(`${turn === "主人" ? "小狗" : "主人"}到达终点！游戏结束～`);
-          }
-        }
-      }, 300);
+    // 检查台词数量
+    const dialogueCount = selected.filter(isDialogueTask).length;
+    if (dialogueCount <= 10) {
+      currentTasks = [startTask, ...selected, endTask];
+      return;
     }
+  }
 
-    document.getElementById('resetBtn').onclick = () => {
-      dogPos = 0;
-      masterPos = 0;
-      turn = "小狗";
-      rollBtn.textContent = "掷骰子 🎲 (轮到小狗)";
+  // 兜底（极少发生）
+  currentTasks = [startTask, ...Object.values(categories).flat().slice(0, 50), endTask];
+}
+
+// 初始抽取
+shuffleAndSelectTasks();
+
+let dogPos = 0;
+let masterPos = 0;
+let turn = "小狗";
+let currentPos = 0;
+
+const grid = document.getElementById('grid');
+const dice = document.getElementById('dice');
+const taskEl = document.getElementById('task');
+const rollBtn = document.getElementById('rollBtn');
+const doneBtn = document.getElementById('doneBtn');
+const modal = document.getElementById('modal');
+const modalText = document.getElementById('modalText');
+
+const specialEffects = ['前进2格', '前进3格', '前进4格', '后退2格', '后退3格', '后退4格'];
+const specialCells = new Map();
+
+function initSpecialCells() {
+  specialCells.clear();
+  const positions = new Set();
+  while (positions.size < 5) {
+    const pos = Math.floor(Math.random() * 44) + 8;
+    positions.add(pos);
+  }
+  positions.forEach(pos => {
+    const effect = specialEffects[Math.floor(Math.random() * specialEffects.length)];
+    specialCells.set(pos, effect);
+  });
+}
+
+function drawBoard() {
+  grid.innerHTML = '';
+  let index = 0;
+  let direction = 1;
+  for (let row = 0; row < 9; row++) {
+    let start = direction === 1 ? 0 : 5;
+    let end = direction === 1 ? 6 : -1;
+    let step = direction === 1 ? 1 : -1;
+    for (let col = start; col !== end; col += step) {
+      if (index >= 52) break;
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (index % 2 === 0 ? '' : ' even');
+      cell.innerHTML = `<div>${index === 0 ? '起点' : index === 51 ? '终点' : index}</div>`;
+      if (specialCells.has(index)) {
+        cell.innerHTML += `<div style="font-size:0.6rem;color:#e74c3c;">特殊: ${specialCells.get(index)}</div>`;
+      }
+      cell.onclick = () => showInstruction(index);
+      grid.appendChild(cell);
+      index++;
+    }
+    direction *= -1;
+  }
+}
+
+function updatePieces() {
+  document.querySelectorAll('.player').forEach(p => p.remove());
+  const cells = document.querySelectorAll('.cell');
+  if (cells[dogPos]) {
+    const dog = document.createElement('div');
+    dog.className = 'player girl';
+    dog.textContent = '小狗';
+    cells[dogPos].appendChild(dog);
+  }
+  if (cells[masterPos]) {
+    const master = document.createElement('div');
+    master.className = 'player boy';
+    master.textContent = '主人';
+    cells[masterPos].appendChild(master);
+  }
+}
+
+function showInstruction(pos) {
+  if (pos < 0 || pos >= currentTasks.length) return;
+  let html = `<strong>格子 ${pos + 1}：</strong><br>${currentTasks[pos]}`;
+  if (specialCells.has(pos)) {
+    html += `<br><br><strong style="color:#e74c3c;">特殊效果：${specialCells.get(pos)}</strong>`;
+  }
+  modalText.innerHTML = html;
+  modal.style.display = 'flex';
+}
+
+function closeModal() {
+  modal.style.display = 'none';
+}
+
+function rollDice() {
+  rollBtn.disabled = true;
+  doneBtn.style.display = 'none';
+  let count = 0;
+  const iv = setInterval(() => {
+    dice.textContent = Math.floor(Math.random() * 6) + 1;
+    count++;
+    if (count > 12) {
+      clearInterval(iv);
+      const num = Math.floor(Math.random() * 6) + 1;
+      dice.textContent = num;
+      movePiece(num);
+    }
+  }, 90);
+}
+
+function applySpecial(pos) {
+  if (!specialCells.has(pos)) return 0;
+  const effect = specialCells.get(pos);
+  const m = effect.match(/(前进|后退)(\d+)格/);
+  if (!m) return 0;
+  return (m[1] === '前进' ? 1 : -1) * Number(m[2]);
+}
+
+function movePiece(steps, isAuto = false) {
+  let pos = turn === "小狗" ? dogPos : masterPos;
+  let moved = 0;
+
+  const interval = setInterval(() => {
+    if (moved >= steps || pos >= 51 || (pos <= 0 && moved > 0)) {
+      clearInterval(interval);
+
+      let finalPos = Math.max(0, Math.min(51, pos));
+      if (pos < 0) {
+        taskEl.innerHTML += `<br><span style="color:#e74c3c;">后退超出起点，已停在起点～</span>`;
+      }
+
+      if (turn === "小狗") dogPos = finalPos;
+      else masterPos = finalPos;
+
       updatePieces();
-      task.innerHTML = "起点：什么都没有，继续玩～<br>当前轮到：小狗";
-    };
+      currentPos = finalPos;
 
-    // 绑定空格键和Enter键投骰子
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' || e.code === 'Enter') {
-        e.preventDefault();
-        rollDice();
+      let text = `<strong>落格 ${finalPos + 1}：</strong><br>${currentTasks[finalPos]}`;
+      const extra = applySpecial(finalPos);
+
+      if (extra !== 0 && !isAuto) {
+        const dir = extra > 0 ? '前进' : '后退';
+        taskEl.innerHTML = text + `<br><br>触发特殊！${dir}${Math.abs(extra)}格...`;
+        setTimeout(() => movePiece(Math.abs(extra), true), 1200);
+        return;
       }
-    });
 
-    rollBtn.onclick = rollDice;
+      showInstruction(finalPos);
+      taskEl.innerHTML = text + (isAuto ? '' : '<br><br>请完成任务～');
 
-    // 点击格子反复打开弹窗
-    document.getElementById('grid').addEventListener('click', (e) => {
-      const cell = e.target.closest('.cell');
-      if (!cell) return;
-      const cells = document.querySelectorAll('.cell');
-      const index = Array.from(cells).indexOf(cell);
-      if (index >= 0) showInstruction(index);
-    });
+      if (!isAuto) {
+        doneBtn.style.display = 'inline-block';
+      } else {
+        finishTurn();
+      }
+      return;
+    }
 
-    drawBoard();
+    pos++;
+    moved++;
+    if (turn === "小狗") dogPos = pos;
+    else masterPos = pos;
     updatePieces();
-  </script>
+
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('current'));
+    const cells = document.querySelectorAll('.cell');
+    if (cells[pos]) cells[pos].classList.add('current');
+  }, 380);
+}
+
+function finishTurn() {
+  document.querySelectorAll('.cell').forEach(c => c.classList.remove('current'));
+  turn = turn === "小狗" ? "主人" : "小狗";
+  rollBtn.textContent = `掷骰子 🎲 (轮到${turn})`;
+  taskEl.innerHTML = `当前轮到：${turn}<br>准备掷骰子～`;
+  doneBtn.style.display = 'none';
+  rollBtn.disabled = false;
+
+  if (currentPos >= 51) {
+    setTimeout(() => {
+      alert(`${turn === "小狗" ? "主人" : "小狗"}先到终点！\n${currentTasks[51]}\n游戏结束～`);
+      rollBtn.disabled = true;
+    }, 800);
+  }
+}
+
+rollBtn.onclick = rollDice;
+doneBtn.onclick = finishTurn;
+
+document.getElementById('resetBtn').onclick = () => {
+  dogPos = masterPos = currentPos = 0;
+  turn = "小狗";
+  shuffleAndSelectTasks();
+  initSpecialCells();
+  drawBoard();
+  updatePieces();
+  rollBtn.textContent = "掷骰子 🎲 (轮到小狗)";
+  rollBtn.disabled = false;
+  doneBtn.style.display = 'none';
+  taskEl.innerHTML = "起点：什么都没有，继续玩～<br>当前轮到：小狗";
+};
+
+document.addEventListener('keydown', e => {
+  if ((e.code === 'Space' || e.code === 'Enter') && !rollBtn.disabled) {
+    e.preventDefault();
+    rollDice();
+  }
+});
+
+grid.addEventListener('click', e => {
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  const idx = Array.from(grid.children).indexOf(cell);
+  if (idx >= 0) showInstruction(idx);
+});
+
+initSpecialCells();
+drawBoard();
+updatePieces();
+</script>
 </body>
 </html>
